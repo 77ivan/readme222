@@ -1,153 +1,74 @@
-# airbridge-ios-sdk-assignment
+# IAMGithub
 
-<br>
-
-## Network 레이어 설계
-
-<br>
+RxSwift와 MVVM를 사용한 Github Repository Star 검색 클라이언트 애플리케이션
 
 
-- Endpoint
-    
-    - URL, path, method, parameters 등의 데이터 객체
+## Reference
 
+- [Github API](https://docs.github.com/en/rest)
 
-- Provider
-   
-   - URLSession, DataTask를 이용하여 Network호출이 이루어 지는 곳
+## Commit Message Rule
 
+- feature: 새로운 기능 추가
+- fix: 버그 수정
+- docs: 문서 관련
+- refactor: 코드 리팩토링
+- test: 테스트 코드
+- chore: 빌드 업무 수정, 파일 수정 등..
+- add: 추가
+- edit: 수정
+- delete: 삭제
+- rename: 이름 변경
+- correct: 문법 오류, 타입 변경, 오타 등..
 
-- APIService
-   
-   - URLSession을 사용하여 도메인에 종속된 Endpoint를 통해 서버에 요청
+## Style Guide
 
-<br>
+- 줄바꿈
 
-## 유실되는 이벤트 없이 서버에 전달하기
-
-<br>
-
-> HTTPURLResponse의 StatusCode 200을 제외한 나머지 경우
-> 
-
-<br>
-
-- 유실된 이벤트를 담은 배열 생성
-
-```swift
-var lostEvent = [Event]()
-```
-
-<br>
-
-- lostEvent 배열에 유실된 이벤트 append
-
-- global Queue에서 유실된 이벤트 재요청
-    - concurrent 특성을 가지기 때문에 여러 스레드로 분산되어 동시 처리
-
-```swift
-lostEvent.append(event)
-                    
-DispatchQueue.global().async {
-    for event in lostEvent {
-        track(event: event)
+    - 함수 정의가 최대 길이를 초과하는 경우에는 줄바꿈
+     ```swift
+    func collectionView(
+      _ collectionView: UICollectionView,
+      cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+      // doSomething()
     }
-}
-```
-
-<br>
-
-
-## `exit(0)`을 고려한 멀티스레드 처리
-
-<br>
-
-
-**DispatchGroup으로 DispatchQueue들을 그룹으로 묶어서, 모든 작업이 끝난 다음 앱 종료(exit(0))**
-
-<br>
-
-- enter()
+    ```
     
-    - Dispatch Group에 들어가며, task를 +1
+    - 함수를 호출하는 코드가 최대 길이를 초과하는 경우에는 파라미터 이름을 기준으로 줄바꿈
+    ```swift
+    let actionSheet = UIActionSheet(
+    title: "정말 계정을 삭제하실 건가요?",
+    delegate: self,
+    cancelButtonTitle: "취소",
+    destructiveButtonTitle: "삭제해주세요"
+    )
+    ```
+
+
+- 빈 줄
+   
+   - 빈 줄에는 공백이 포함되지 않도록
     
-    - 선행 실행을 알림
+   - 모든 파일은 빈 줄로 끝나도록
 
-- leave()
+
+- 네이밍
     
-    - Dispatch Group에서 나오며, task를 -1
-    
-    - 실행이 끝났다는 것을 알림
-
-- notify()
-    
-    - task가 0이 되었을 때 실행
-    
-    - 후행 실행 시작을 알림
-
-<br>
-
-1. 서버에 이벤트 요청 시, `enter()` 함수 호출 → 서버에 전달할 이벤트 수만큼 (for문이 순회하는만큼) 실행 알림
-
-2. dataTask 메서드에서 response 에러가 없을 경우 디코딩 후 `leave()` 함수 호출
-
-3. response 에러발생 시 NetworkError(.invaildResponse)를 Callback.
-
-    global Queue에서 track 메서드 재실행 → 재실행 후 데이터를 성공적으로 보낸 뒤,`leave()` 함수 호출
-
-4. ContentView에서 `notify(queue:)` 함수 호출 →  후행 실행 시작을 알림, **exit() 실행**
-
-
-<br>
-
-## 이벤트 전송 중 네트워크가 끊어지는 케이스
-
-<br>
-
-
-> iOS12부터는 `NWNetworkMonitor` 내부 라이브러리를 통해서 현재 인터넷 상태 변경에 대한 감지를 할 수 있도록 제공
-> 
-
-<br>
-
-**Target OS Version 9.0**을 대응하기 위해서는 `Reachability` 라이브러리 사용
-
-1. 네트워크 상태 모니터링을 위한 Reachability 인스턴스 생성
-
-2. NotificationCenter에 네트워크 상태 변화를 감지하기 위한 observer 등록
-
-3. 네트워크 상태가 변경될때마다 reachabilityChanged 메서드에서 Callback
-
-<br>
-
-## 이벤트 전송 중 앱이 꺼지는 케이스
-
-<br>
-
-- 이벤트 전송 중 background로 전환 시에는 background모드에서도 이벤트 전송 가능
-
-- Swipe로 앱을 종료 시에는 작업 중단
-
-<br>
-
-## 네트워크가 불안정한 환경에서 이벤트를 전송하는 케이스
-
-
-<br>
-
-- Network Link Conditioner → **Very Bad Network** 설정 후 테스트
-
-<br>
-
-
-<img src = "https://user-images.githubusercontent.com/93528918/157194520-37d7bb1d-ff8c-4663-b367-20c555fcfe96.png" width="70%" height="70%">
-
-
-<img src = "https://user-images.githubusercontent.com/93528918/157194525-ca87339d-74f6-48d8-bee9-7262aa5d8292.gif" width="70%" height="70%">
+    - Action 함수의 네이밍은 '주어 + 동사 + 목적어' 형태
+        
+        - Tap(눌렀다 뗌)은 `UIControlEvents`의 `.touchUpInside`에 대응
+        
+        - Press(누름)는 `.touchDown`에 대응
+        
+        - *will~*은 특정 행위가 일어나기 직전이고, *did~*는 특정 행위가 일어난 직후
+       
+        - *should~*는 일반적으로 `Bool`을 반환하는 함수에 사용
 
 
 
 
-<br>
-<br>
-<br>
+
+
+
+
