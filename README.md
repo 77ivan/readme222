@@ -4,6 +4,16 @@ RxSwift와 MVVM를 사용한 Github Repository Star 검색 클라이언트 애�
 
 <br>
 
+## Configuration
+
+- OAuth
+- User Infomation
+- User Repository
+- User Starred Repository
+- Search Repository
+
+<br>
+
 ## Reference
 
 - [Github API](https://docs.github.com/en/rest)
@@ -11,14 +21,15 @@ RxSwift와 MVVM를 사용한 Github Repository Star 검색 클라이언트 애�
 <br>
 
 ## Library
-- RxSwift, RxCocoa
-- RxDataSources
-- SnapKit
-- Kingfisher
-- Moya
-- Then
-- Toast
-- KeychainSwift
+
+- [RxSwift, RxCocoa](https://github.com/ReactiveX/RxSwift)
+- [RxDataSources](https://github.com/RxSwiftCommunity/RxDataSources)
+- [SnapKit](https://github.com/SnapKit/SnapKit)
+- [Kingfisher](https://github.com/onevcat/Kingfisher)
+- [Moya](https://github.com/Moya/Moya)
+- [Then](https://github.com/devxoul/Then)
+- [Toast](https://github.com/scalessec/Toast-Swift)
+- [KeychainSwift](https://github.com/kishikawakatsumi/KeychainAccess)
 
 <br>
 
@@ -75,10 +86,10 @@ RxSwift와 MVVM를 사용한 Github Repository Star 검색 클라이언트 애�
     - 함수를 호출하는 코드가 최대 길이를 초과하는 경우에는 파라미터 이름을 기준으로 줄바꿈
     ```swift
     let actionSheet = UIActionSheet(
-    title: "정말 계정을 삭제하실 건가요?",
-    delegate: self,
-    cancelButtonTitle: "취소",
-    destructiveButtonTitle: "삭제해주세요"
+      title: "정말 계정을 삭제하실 건가요?",
+      delegate: self,
+      cancelButtonTitle: "취소",
+      destructiveButtonTitle: "삭제해주세요"
     )
     ```
 
