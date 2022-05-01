@@ -1,3 +1,6 @@
+
+![화면 기록 2022-05-02 오전 12 06 41](https://user-images.githubusercontent.com/93528918/166152074-be2653b6-3ddd-4eb4-983d-fdcddfd2d60a.gif)
+
 # IAMGithub
 
 RxSwift와 MVVM를 사용한 Github Repository Star 검색 클라이언트 애플리케이션
